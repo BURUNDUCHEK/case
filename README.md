@@ -1,2 +1,2 @@
 # case
-Wordpress + MySQL + Caddy
+PHP + MySQL + Caddy
