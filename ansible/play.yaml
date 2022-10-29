@@ -13,13 +13,20 @@
           - docker-compose
           - curl
           - apparmor
-    - name: Install Caddy
+          - debian-keyring
+          - debian-archive-keyring
+          - apt-transport-https
+    - name: Install caddy key
       shell: |
-        apt install -y debian-keyring debian-archive-keyring apt-transport-https
         curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-        curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
-        apt update
-        apt install caddy
+    - name: Install caddy repo
+      get_url: 
+        url: https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt
+        dest: /etc/apt/sources.list.d/caddy-stable.list
+    - name: apt update and install caddy
+      apt:
+        update_cache: yes
+        pkg: caddy
     - name: Start caddy
       service:
         name: caddy
