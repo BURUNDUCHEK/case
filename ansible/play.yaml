@@ -13,17 +13,13 @@
           - docker-compose
           - curl
           - apparmor
-    - name: Create project dir
-      file:
-        path: /home/debian/wordpress
-        state: directory 
     - name: Install Caddy
       shell: |
-        sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
+        apt install -y debian-keyring debian-archive-keyring apt-transport-https
         curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
         curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
-        sudo apt update
-        sudo apt install caddy
+        apt update
+        apt install caddy
     - name: Start caddy
       service:
         name: caddy
@@ -37,11 +33,15 @@
       service:
         name: caddy
         state: restarted
-    - name: Copy docker-compose
+    - name: Copy dir
       copy:
-        src: docker-compose.yaml
-        dest: /home/debian/wordpress/docker-compose.yaml
+        src: ./lamp
+        dest: /home/debian/
+    - name: Permission
+      file:
+        path: /home/debian/lamp/uploads
+        owner: www-data
     - name: Start docker-compose
       docker_compose:
-        project_src: /home/debian/wordpress
+        project_src: /home/debian/lamp
           
